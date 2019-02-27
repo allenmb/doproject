@@ -1,38 +1,36 @@
 import numpy as np
 import matplotlib.pyplot as plt
+from scipy.interpolate import interp1d
 
-x = np.linspace(0, 100, 100)
-
-def fractional_flow_model(x):
-    return 0.01*np.exp(-0.03*x)
-
-    plt.plot(x, model(x))
-    plt.show()
-
-def crm_model():
-
-    y0 = 0
-    u0 = 0
-    nt = 1000
-    dt = 1/nt
-    K = 1
-    tau = 0.08
-    u = np.zeros(nt)
+def model():
+    nt = 1000                       # number of time points
+    time = np.linspace(0, 1, nt)    # time array - dimensionless
+    dt = time[-1]/nt                # time step
+    y0 = 0                          # initial condensate flowrate
+    u0 = 0                          # initial heat flowrate
+    u = np.zeros(nt)                # heat flowrate array
     u[10:] = 100
     u[600:] = 50
-    eo_total = 100
-    A = 0.01
-    B = -0.03
-    time = np.linspace(0, 1, nt)
+    u_func = interp1d(time, u)
 
-    y_model = []
-    eo_model = []
-    eo_frac = []
+    # System parameters
+    K = 1                           # FOPDT gain
+    tau = 0.08                      # FOPDT time constant
+    theta = 0.1                     # FOPDT deadtime
+    A = 0.01                        # Fractional flow pre-exponential constant
+    B = -0.03                       # Fractional flow exponential constant
+
+    y_model = []                    # condensate flowrates
+    eo_frac = []                    # condensate eo fraction
+    eo_model = []                   # collected essential oil
+
     y_prev = 0
     eo_prev = 0
-
     for i, t in enumerate(time):
-        flow = np.exp(-dt/tau)*(y_prev-y0) + K*(1-np.exp(-dt/tau))*(u[i] - u0)
+        u_val = 0
+        if (t-theta) >= 0:
+            u_val = u_func(t-theta)
+        flow = np.exp(-dt/tau)*(y_prev-y0) + K*(1-np.exp(-dt/tau))*(u_val)
         y_model.append(flow)
         eo_yield = A*np.exp(B*eo_prev)
         eo_frac.append(eo_yield)
@@ -41,15 +39,19 @@ def crm_model():
         eo_prev = eo_model[-1]
 
     plt.subplot(3, 1, 1)
-    plt.plot(time, y_model, label='model')
-    plt.plot(time, u, label='u')
+    plt.plot(time, y_model, label='condensate')
+    plt.plot(time, u, label='heat')
+    plt.ylabel('Flow rates')
     plt.legend()
     plt.subplot(3, 1, 2)
-    plt.plot(time, eo_model)
-    plt.subplot(3, 1, 3)
     plt.plot(time, eo_frac)
+    plt.ylabel('Oil fraction in condensate')
+    plt.subplot(3, 1, 3)
+    plt.plot(time, eo_model)
+    plt.ylabel('Essential oil collected')
+    plt.xlabel('time (dimensionless)')
     plt.show()
 
 
 if __name__ == "__main__":
-    crm_model()
+    model()
