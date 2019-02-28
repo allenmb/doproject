@@ -2,7 +2,13 @@ import numpy as np
 import matplotlib.pyplot as plt
 from scipy.interpolate import interp1d
 
-def model():
+def get_data(path='fake_data.csv'):
+    'Get data from a file as useable arrays'
+    return  np.loadtxt(path, delimiter=',', usecols=(0, 1, 2, 3), skiprows=1, unpack=True)
+
+def model(use_different_fake_data=False):
+
+    # Fake data for testing the model
     nt = 1000                       # number of time points
     time = np.linspace(0, 1, nt)    # time array - dimensionless
     dt = time[-1]/nt                # time step
@@ -11,6 +17,19 @@ def model():
     u = np.zeros(nt)                # heat flowrate array
     u[10:] = 100
     u[600:] = 50
+
+    y_data = None
+    eo_data = None
+
+    # Fake data read in from another soure
+    if use_different_fake_data:
+        time, u, y_data, eo_data = get_data()
+        print(time, u, y_data, eo_data)
+        nt = len(time)
+        dt = (time[-1] - time[0]) / nt
+        y0 = y_data[0]
+        u0 = u[0]
+
     u_func = interp1d(time, u)
 
     # System parameters
@@ -40,6 +59,8 @@ def model():
 
     plt.subplot(3, 1, 1)
     plt.plot(time, y_model, label='condensate')
+    if use_different_fake_data:
+        plt.plot(time, y_data, label='condensate data')
     plt.plot(time, u, label='heat')
     plt.ylabel('Flow rates')
     plt.legend()
@@ -54,4 +75,4 @@ def model():
 
 
 if __name__ == "__main__":
-    model()
+    model(use_different_fake_data=True)
