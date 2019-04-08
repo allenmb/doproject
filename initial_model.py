@@ -33,7 +33,7 @@ def model(use_different_fake_data=False):
     u_func = interp1d(time, u)
 
     # System parameters
-    K = 1                           # FOPDT gain
+    K = 1.1                           # FOPDT gain
     tau = 0.08                      # FOPDT time constant
     theta = 0.1                     # FOPDT deadtime
     A = 0.01                        # Fractional flow pre-exponential constant
@@ -75,4 +75,4 @@ def model(use_different_fake_data=False):
 
 
 if __name__ == "__main__":
-    model(use_different_fake_data=True)
+    model(use_different_fake_data=False)
