@@ -3,42 +3,40 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 
-data       = pd.read_csv('trial6.csv')
+data       = pd.read_csv(r'.\trial6\trial6.csv')
 t_m        = data['Time (min)']
 eo_m       = data['Oil (mL)']
 hydrosol_m = data['Hydrosol (mL)']
 u_m        = data['u (Temp sp)']
-plt.figure(1)
-plt.subplot(3,1,1)
-plt.plot(t_m,eo_m,label='oil')
-plt.legend()
-plt.subplot(3,1,2)
-plt.plot(t_m,hydrosol_m,label='hydrosol')
-plt.legend()
-plt.subplot(3,1,3)
-plt.plot(t_m,u_m,label='Temp')
-plt.legend()
-plt.show()
-plt.savefig('data.png')
+
 m          = GEKKO()
 nt         = len(t_m)
 m.time     = np.linspace(0,10,5)
 
 y          = m.Var(value=0)
-eo_yield   = m.Var(value=0)
+eo_frac    = m.Var(value=0)
 eo_prev    = m.Param(value=0)
-u          = m.Param(value=0)
+u          = m.MV(value=0)
+u.FSTATUS = 1
+u.STATUS = 0
 
 K          = m.MV(1)
 tau        = m.MV(0.08)
+K.STATUS  = 1
+tau.STATUS = 1
 #theta     = m.MV(0.1) took out dead time because measured data starts at passover
 
 A          = m.MV(0.01)
 B          = m.MV(-0.03)
+A.STATUS  = 1
+B.STATUS  = 1
 
+eo_flow = m.Intermediate(eo_frac * y)
 m.Equation(tau * y.dt() == -y + K * u)
-m.Equation(eo_yield == A * m.exp(B * eo_prev))
+m.Equation(eo_frac == A * m.exp(B * eo_prev))
 
+m.Obj((y - eo_m+hydrosol_m)**2)
+m.Obj((eo_flow - eo_m)**2)
 m.options.IMODE = 5
 
 #Arrays for storage
@@ -51,7 +49,7 @@ A_plt      = np.zeros(len(t_m))
 B_plt      = np.zeros(len(t_m))
 
 for i in range(len(t_m)):
-    u.value = u_m[i]
+    u.MEAS = u_m[i]
     m.solve()
     
     flow[i]       = y.value[-1]
@@ -62,7 +60,7 @@ for i in range(len(t_m)):
     eo_frac[i]    = eo_yield.value[-1]
     eo_prev.value = eo_yield.value[-1]
     
-plt.figure(2)
+plt.figure()
 plt.subplot(4,1,1)
 plt.plot(t_m,eo_flow,label='eo_flow')
 plt.plot(t_m,eo_frac,label='eo_frac')
