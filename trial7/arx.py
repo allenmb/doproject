@@ -3,7 +3,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 
 # load data and parse into columns
-data       = pd.read_csv('trial6.csv')
+data       = pd.read_csv('trial7.csv')
 t_m        = data['Time (min)']
 eo_m       = data['Oil (mL)']
 hydrosol_m = data['Hydrosol (mL)']
@@ -28,27 +28,3 @@ plt.legend()
 plt.xlabel('Time')
 plt.savefig('sysid.png')
 plt.show()
-
-print(p)
-print(K)
-'''
-from gekko import GEKKO
-import pandas as pd
-import matplotlib.pyplot as plt
-
-# load data and parse into columns
-url = 'http://apmonitor.com/do/uploads/Main/tclab_dyn_data2.txt'
-data = pd.read_csv(url)
-t = data['Time']
-u = data[['H1','H2']]
-y = data[['T1','T2']]
-
-# generate time-series model
-m = GEKKO(remote=False) # remote=True for MacOS
-
-# system identification
-na = 2 # output coefficients
-nb = 2 # input coefficients
-yp,p,K = m.sysid(t,u,y,na,nb,diaglevel=1)
-
-'''
