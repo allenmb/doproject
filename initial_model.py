@@ -75,4 +75,4 @@ def model(use_different_fake_data=False):
 
 
 if __name__ == "__main__":
-    model(use_different_fake_data=False)
+    model(use_different_fake_data=True)
