@@ -3,31 +3,51 @@ import pandas as pd
 import matplotlib.pyplot as plt
 
 # load data and parse into columns
-data       = pd.read_csv('trial1.csv')
-t_m        = data['Time (min)']
-eo_m       = data['Oil (mL)']
-hydrosol_m = data['Hydrosol (mL)']
-u_m        = data['u (Temp sp)']
+data1       = pd.read_csv('trial1.csv')
+t_m1        = data1['Time (min)']
+eo_m1       = data1['Oil (mL)']
+hydrosol_m1 = data1['Hydrosol (mL)']
+u_m1        = data1['u (Temp sp)']
 
 # generate time-series model
-m = GEKKO()
+m1 = GEKKO()
 
 # system identification
 na = 3 # output coefficients
 nb = 3 # input coefficients
-yp,p,K = m.sysid(t_m,u_m,eo_m,na,nb,diaglevel=1)
+yp1,p1,K1 = m1.sysid(t_m1,u_m1,eo_m1,na,nb,diaglevel=1)
 
-plt.figure()
+# load data and parse into columns
+data2       = pd.read_csv(r'..\trial7\trial7.csv')
+t_m2        = data2['Time (min)']
+eo_m2       = data2['Oil (mL)']
+hydrosol_m2 = data2['Hydrosol (mL)']
+u_m2        = data2['u (Temp sp)']
+
+# generate time-series model
+m2 = GEKKO()
+
+# system identification
+na = 3 # output coefficients
+nb = 3 # input coefficients
+yp2,p2,K2 = m2.sysid(t_m2,u_m2,eo_m2,na,nb,diaglevel=1)
+
+plt.figure(figsize=(10,10))
 plt.subplot(2,1,1)
-plt.plot(t_m,u_m,label='u')
+plt.title("ARX Comparison",fontsize=15)
+plt.plot(t_m1,u_m1,linewidth=2,label='u1')
+plt.plot(t_m2,u_m2,linewidth=2,label='u7')
+plt.ylabel("Heat Output",fontsize=15)
 plt.legend()
 plt.subplot(2,1,2)
-plt.plot(t_m,eo_m,label='meas')
-plt.plot(t_m,yp,label='model')
+plt.plot(t_m1,eo_m1,linewidth=2,label='meas1')
+plt.plot(t_m1,yp1,linewidth=2,label='model1')
+plt.plot(t_m2,yp2,linewidth=2,label='model7')
+plt.ylabel("Volume of Oil Collected",fontsize=15)
 plt.legend()
-plt.xlabel('Time')
-plt.savefig('sysid.png')
+plt.xlabel('Time',fontsize=15)
+plt.savefig('sysid_comp17.png')
 plt.show()
 
-fo = open("params.txt","w")
-fo.write(str(p))
+#fo = open("params.txt","w")
+#fo.write(str(p))

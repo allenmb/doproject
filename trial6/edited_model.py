@@ -100,30 +100,31 @@ def model(use_data=False):
             u_prev = u[i]
             eo_prev = eo_model[i]
     
-    plt.figure(figsize=(10,15))
-    plt.subplot(3, 1, 1)
-    plt.plot(time, u, label='heat')
-    plt.ylabel('Heat Profile (Temp SP)')
-    plt.subplot(3,1,2)
-    plt.plot(time, y_model, label='model')
-    if use_data:
-        plt.plot(time, y_data, label='data')
-    plt.ylabel('Condensate Flow rate')
+    plt.figure(figsize=(10,10))
+    plt.subplot(2, 1, 1)
+    plt.title("FOPDT/FF Model",fontsize=15)
+    plt.plot(time, u, linewidth=2, label='heat')
+    plt.ylabel('Heat Profile (Temp SP)',fontsize=15)
+    #plt.subplot(3,1,2)
+    #plt.plot(time, y_model, label='model')
+    #if use_data:
+    #    plt.plot(time, y_data, label='data')
+    #plt.ylabel('Condensate Flow rate')
+    #plt.legend(loc='best')
+    plt.subplot(2, 1, 2)
+    plt.plot(time, eo_frac,linewidth=2,label='model')
+    plt.plot(time,eo_data,linewidth=2,label='data')
     plt.legend(loc='best')
-    plt.subplot(3, 1, 3)
-    plt.plot(time, eo_frac,label='model')
-    plt.plot(time,eo_data,label='data')
-    plt.legend(loc='best')
-    plt.ylabel('Oil fraction in condensate')
-    plt.xlabel('Time (min)')
-    plt.savefig('edited_model.png')
+    plt.ylabel('Oil fraction in condensate',fontsize=15)
+    plt.xlabel('Time (min)',fontsize=15)
+    plt.savefig('edited_model2.png')
     plt.show()
     
-    fo = open("params.txt","a")
-    fo.write('\n\n[K, tau, A, B]\n')
-    fo.write(str(res['x']))
-    fo.close()
-    
+    #fo = open("params.txt","a")
+    #fo.write('\n\n[K, tau, A, B]\n')
+    #fo.write(str(res['x']))
+    #fo.close()
+    '''
     plt.figure(figsize=(10,10))
     plt.plot(time, eo_frac,label='model')
     plt.plot(time,eo_data,label='data')
@@ -132,6 +133,7 @@ def model(use_data=False):
     plt.xlabel('Time (min)')
     plt.savefig('edited2.png')
     plt.show()
+    '''
 
 if __name__ == "__main__":
     model(use_data=True)
