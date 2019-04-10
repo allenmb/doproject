@@ -101,33 +101,39 @@ def model(use_data=False):
             y_prev = flow
             u_prev = u[i]
             eo_prev = eo_model[i]
-    
-    plt.figure()
-    plt.subplot(4, 1, 1)
+        
+    plt.figure(figsize=(10,15))
+    plt.subplot(3, 1, 1)
     plt.plot(time, u, label='heat')
     plt.ylabel('Heat Profile (Temp SP)')
-    plt.subplot(4,1,2)
+    plt.subplot(3,1,2)
     plt.plot(time, y_model, label='model')
     if use_data:
         plt.plot(time, y_data, label='data')
     plt.ylabel('Condensate Flow rate')
-    plt.legend()
-    plt.subplot(4, 1, 3)
+    plt.legend(loc='best')
+    plt.subplot(3, 1, 3)
     plt.plot(time, eo_frac,label='model')
     plt.plot(time,eo_data,label='data')
+    plt.legend(loc='best')
     plt.ylabel('Oil fraction in condensate')
-    plt.subplot(4, 1, 4)
-    plt.plot(time, eo_model,label='model')
-    plt.plot(time,eo_coll,label='data')
-    plt.ylabel('Essential oil collected')
-    plt.xlabel('time (minutes)')
+    plt.xlabel('Time (min)')
     plt.savefig('edited_model.png')
-    #plt.show()
+    plt.show()
     
     fo = open("params.txt","a")
     fo.write('\n\n[K, tau, A, B]\n')
     fo.write(str(res['x']))
     fo.close()
+    
+    plt.figure(figsize=(10,10))
+    plt.plot(time, eo_frac,label='model')
+    plt.plot(time,eo_data,label='data')
+    plt.legend(loc='best')
+    plt.ylabel('Oil fraction in condensate')
+    plt.xlabel('Time (min)')
+    plt.savefig('edited2.png')
+    plt.show()
 
 if __name__ == "__main__":
     model(use_data=True)
